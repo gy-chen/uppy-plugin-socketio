@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import Plugin from 'uppy/src/core/Plugin';
+import Plugin from 'uppy/lib/core/Plugin';
 
 
 class SocketIOUploader extends Plugin {
@@ -19,15 +19,15 @@ class SocketIOUploader extends Plugin {
 
         this.handleUpload = this.handleUpload.bind(this);
         this.uploadFile = this.uploadFile.bind(this);
-        this._initialize_socketio = this._initialize_socketio.bind();
+        this._initialize_socketio = this._initialize_socketio.bind(this);
 
         this._initialize_socketio(this.opts.socketio);
     }
 
     _initialize_socketio(socketio) {
-        if (instanceof(socketio, object)) {
+        if (typeof socketio === "object") {
             this._io = socketio;
-        } else if (instanceof(socketio, string)) {
+        } else if (typeof socketio === "string") {
             this._io = io(socketio);
         } else {
             throw new Error("Please provide socketio opt.");
@@ -41,7 +41,7 @@ class SocketIOUploader extends Plugin {
      * @return promise
      */
     uploadFile(fileID) {
-        const file = this.uppy.get(fileID);
+        const file = this.uppy.getFile(fileID);
         return new Promise((resolve, reject) => {
             this.uppy.emit('upload-started', file.id)
             this._io.emit(this.opts.channel, file.data, data => {
