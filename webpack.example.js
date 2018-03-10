@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: './example/example.js',
@@ -8,8 +9,13 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './example'
+        contentBase: './example',
+        hot: true
     },
+    plugins: [
+        new webpack.NamedModulesPlugin(),
+        new webpack.HotModuleReplacementPlugin()
+    ],
     module: {
         rules: [
             {

@@ -13,8 +13,8 @@ class SocketIOUploader extends Plugin {
 
         const defaultOptions = {
             channel: '/file',
-            // provide socketio object or socketio server url
-            socketio: null
+            // provide socketio object or io server url
+            io: null
         };
 
         this.opts = Object.assign({}, defaultOptions, opts);
@@ -24,7 +24,7 @@ class SocketIOUploader extends Plugin {
         this._initializeSocketio = this._initializeSocketio.bind(this);
         this._emitFileUploadProgress = this._emitFileUploadProgress.bind(this);
 
-        this._initializeSocketio(this.opts.socketio);
+        this._initializeSocketio(this.opts.io);
     }
 
     _initializeSocketio(socketio) {
@@ -33,14 +33,13 @@ class SocketIOUploader extends Plugin {
         } else if (typeof socketio === "string") {
             this._io = io(socketio);
         } else {
-            throw new Error("Please provide socketio opt.");
+            throw new Error("Please provide io opt.");
         }
     }
 
     _emitFileUploadProgress(file, bytesUploaded, bytesTotal) {
-        this.uppy.emit('upload-progress', {
+        this.uppy.emit('upload-progress', file, {
             uploader: this,
-            id: file.id,
             bytesUploaded,
             bytesTotal
         });
@@ -52,24 +51,16 @@ class SocketIOUploader extends Plugin {
      * @param fileID
      * @return promise
      */
-    uploadFile(fileID) {
+    async uploadFile(fileID) {
         const file = this.uppy.getFile(fileID);
         this.uppy.log('[SocketIOUploader] start to upload file ' + fileID);
-        return new Promise((resolve, reject) => {
-            
-            // start upload file
-            this.uppy.emit('upload-started', file.id)
-            readFile(file.data)
-                .then(data => {
-                    // XXX don't know how to get upload progress of socketio. fixed upload progress here.
-                    // this._emitFileUploadProgress(file, data.byteLength / 2, data.byteLength);
-                    this._io.emit(this.opts.channel, data, data => {
-                        // server need to send ack 
-                        this.uppy.emit('upload-success', file.id);
-                        resolve(file);
-                    });
-                });
-
+        this.uppy.emit('upload-started', file.id)
+        const data = await readFile(file.data);
+        // XXX don't know how to get upload progress of io. fixed upload progress here.
+        this._emitFileUploadProgress(file, data.byteLength / 2, data.byteLength);
+        this._io.emit(this.opts.channel, data, data => {
+            this.uppy.log('[SocketIOUploader] upload file success ' + fileID)
+            this.uppy.emit('upload-success', file);
         });
     }
 

@@ -4,12 +4,20 @@
   "description": "An uppy uploader plugin for uploading files through SokcetIO connection.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-example": "webpack-dev-server --config webpack.example.js --open"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "socket.io-client": "^2.0.4",
     "uppy": "^0.23.2"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.10",
+    "style-loader": "^0.20.3",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.11",
+    "webpack-dev-server": "^3.1.1"
   }
 }

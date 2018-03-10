@@ -13,8 +13,8 @@ uppy.use(Dashboard, {
 });
 
 uppy.use(SocketIOUpload, {
-    channel: '/binary',
-    socketio: 'http://127.0.0.1:8000'
+    channel: 'binary',
+    io: 'http://127.0.0.1:8000'
 });
 
 uppy.run();
