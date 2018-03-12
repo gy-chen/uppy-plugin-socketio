@@ -2,9 +2,11 @@
   "name": "uppy-plugin-socketio",
   "version": "0.0.1",
   "description": "An uppy uploader plugin for uploading files through SokcetIO connection.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "src/plugin/SocketIOUploader.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
     "start-example": "webpack-dev-server --config webpack.example.js --open"
   },
   "author": "",
