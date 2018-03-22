@@ -37,14 +37,6 @@ class SocketIOUploader extends Plugin {
         }
     }
 
-    _emitFileUploadProgress(file, bytesUploaded, bytesTotal) {
-        this.uppy.emit('upload-progress', file, {
-            uploader: this,
-            bytesUploaded,
-            bytesTotal
-        });
-    }
-
     /**
      * upload file
      *
@@ -54,21 +46,19 @@ class SocketIOUploader extends Plugin {
     async uploadFile(fileID) {
         const file = this.uppy.getFile(fileID);
         this.uppy.log('[SocketIOUploader] start to upload file ' + fileID);
-        this.uppy.emit('upload-started', file.id)
+        this.uppy.emit('upload-started', fileID);
         const data = await readFile(file.data);
-        // XXX don't know how to get upload progress of io. fixed upload progress here.
-        this._emitFileUploadProgress(file, data.byteLength / 2, data.byteLength);
-        this._io.emit(this.opts.channel, data, data => {
-            this.uppy.log('[SocketIOUploader] upload file success ' + fileID)
+        this._io.emit(this.opts.channel, data, () => {
+            this.uppy.log('[SocketIOUploader] upload file success ' + fileID);
             this.uppy.emit('upload-success', file);
         });
     }
 
     handleUpload(fileIDs) {
-        const promises = fileIDs.map(fileId => {
-            return this.uploadFile(fileId);
+        const promises = fileIDs.map(fileID => {
+            return this.uploadFile(fileID);
         });
-        return settle(promises);
+        return settle(promises).then(() => null);
     }
 
     install() {
