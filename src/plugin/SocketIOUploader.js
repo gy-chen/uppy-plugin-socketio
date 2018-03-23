@@ -22,7 +22,6 @@ class SocketIOUploader extends Plugin {
         this.handleUpload = this.handleUpload.bind(this);
         this.uploadFile = this.uploadFile.bind(this);
         this._initializeSocketio = this._initializeSocketio.bind(this);
-        this._emitFileUploadProgress = this._emitFileUploadProgress.bind(this);
 
         this._initializeSocketio(this.opts.io);
     }
@@ -46,7 +45,8 @@ class SocketIOUploader extends Plugin {
     async uploadFile(fileID) {
         const file = this.uppy.getFile(fileID);
         this.uppy.log('[SocketIOUploader] start to upload file ' + fileID);
-        this.uppy.emit('upload-started', fileID);
+        debugger;
+        this.uppy.emit('upload-started', file);
         const data = await readFile(file.data);
         this._io.emit(this.opts.channel, data, () => {
             this.uppy.log('[SocketIOUploader] upload file success ' + fileID);
