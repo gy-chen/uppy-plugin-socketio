@@ -44,7 +44,6 @@ class SocketIOUploader extends Plugin {
   async uploadFile(fileID) {
     const file = this.uppy.getFile(fileID);
     this.uppy.log("[SocketIOUploader] start to upload file " + fileID);
-    debugger;
     this.uppy.emit("upload-started", file);
     const data = await readFile(file.data);
     this._io.emit(this.opts.channel, data, () => {
